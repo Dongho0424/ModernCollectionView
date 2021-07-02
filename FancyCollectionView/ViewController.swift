@@ -21,7 +21,9 @@ class ViewController: UIViewController {
         collectionView.backgroundColor = .systemBackground
         view.addSubview(collectionView)
         
+        collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.identifier)
         collectionView.register(FeaturedCell.self, forCellWithReuseIdentifier: FeaturedCell.identifier)
+        collectionView.register(MediumTableCell.self, forCellWithReuseIdentifier: MediumTableCell.identifier)
         
         createDataSource()
         reloadData()
@@ -41,9 +43,34 @@ class ViewController: UIViewController {
             collectionView, indexPath, app in
             
             switch self.sections[indexPath.section].type {
+            case "mediumTable":
+                return self.configure(MediumTableCell.self, with: app, for: indexPath)
             default:
                 return self.configure(FeaturedCell.self, with: app, for: indexPath)
             }
+        }
+        
+        dataSource.supplementaryViewProvider = {
+            [weak self] collectionView, kind, indexPath in
+            guard let self = self else { return nil }
+            
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.identifier, for: indexPath) as? SectionHeader
+            else { return nil }
+            
+            guard let firstApp = self.dataSource.itemIdentifier(for: indexPath)
+            else { return nil }
+            print("firstApp: \(firstApp)")
+            
+            guard let section = self.dataSource.snapshot().sectionIdentifier(containingItem: firstApp)
+            else { return nil }
+            print("section: \(section)")
+            
+            if section.title.isEmpty { return nil }
+            
+            sectionHeader.title.text = section.title
+            sectionHeader.subtitle.text = section.subtitle
+            
+            return sectionHeader
         }
     }
     
@@ -81,6 +108,8 @@ class ViewController: UIViewController {
             let section = self.sections[sectionIndex]
             
             switch section.type {
+            case "mediumTable":
+                return self.createMediumSection(using: section)
             default:
                 return self.createFeaturedSection(using: section)
             }
@@ -92,6 +121,23 @@ class ViewController: UIViewController {
         
         return layout
     }
-
+    
+    func createMediumSection(using section: Section) -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.333))
+        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
+        
+        let layoutGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .fractionalWidth(0.55))
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: layoutGroupSize, subitems: [layoutItem])
+        
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+        
+        let layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.93), heightDimension: .estimated(80))
+        let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        layoutSection.boundarySupplementaryItems = [layoutSectionHeader]
+        
+        return layoutSection
+    }
 }
 
