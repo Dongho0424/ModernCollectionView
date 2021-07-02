@@ -292,7 +292,47 @@
 				"subheading": "",
 				"image": "Category5",
 				"iap": true
-			}
+			},
+            {
+                "id": 36,
+                "tagline": "",
+                "name": "Apple Watch Apps",
+                "subheading": "",
+                "image": "Category1",
+                "iap": true
+            },
+            {
+                "id": 37,
+                "tagline": "",
+                "name": "AR Apps",
+                "subheading": "",
+                "image": "Category2",
+                "iap": false
+            },
+            {
+                "id": 38,
+                "tagline": "",
+                "name": "Photos & Video",
+                "subheading": "",
+                "image": "Category3",
+                "iap": true
+            },
+            {
+                "id": 39,
+                "tagline": "",
+                "name": "Entertainment",
+                "subheading": "",
+                "image": "Category4",
+                "iap": false
+            },
+            {
+                "id": 40,
+                "tagline": "",
+                "name": "Health & Fitness",
+                "subheading": "",
+                "image": "Category5",
+                "iap": true
+            }
 		]
 	},
 	{
